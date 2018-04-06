@@ -34,7 +34,6 @@ class Task(object):
 
     def __getstate__(self):
         result = self.__dict__.copy()
-        # del result['pool']
         return result
 
     def snapshot(self):
@@ -47,14 +46,6 @@ class Task(object):
         as_string += '\n++++++++++++++++++++++++++++++++++++++++\n'
         return as_string
 
-    # @property
-    # def input(self):
-    #     return self._input
-    #
-    # input.setter
-    # def input(self, data):
-    #     self._input.add(data)
-
 
 class BatchTask(Task):
     def __init__(self, func, batch_size, inputs, *args, **kwargs):
@@ -63,7 +54,6 @@ class BatchTask(Task):
         super().__init__(func, *args, **kwargs)
 
     def execute(self, data):
-        print('BatchTask.execute')
         return self.task(data, *self.args, **self.kwargs)
 
     def run(self):
@@ -98,16 +88,7 @@ class AsyncTask(BatchTask):
         return out[0] if len(out) != 0 else None
 
     def execute(self, data):
-        print('AsyncTask.execute')
         return self.pool.map(self.worker, data)
-
-    # def run(self):
-    #     try:
-    #         need_execution, data = super().run()
-    #         if need_execution:
-    #             self.execute(data)
-    #     except Exception as e:
-    #         raise e
 
     def run(self):
         if not self.next_run_required:
